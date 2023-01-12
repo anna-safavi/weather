@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="typeof weather.main != 'undefined' && overcast()">
     <main>
       <div class="search-box">
         <input
@@ -18,8 +18,23 @@
           <div class="date">{{ dateBuilder() }}</div>
         </div>
         <div class="weather-box">
-          <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
+          <div class="temp">{{ Math.round(weather.main.temp) }}°F</div>
+          <div class="feels">
+            Feels Like {{ Math.round(weather.main.feels_like) }}°F
+          </div>
           <div class="weather">{{ weather.weather[0].main }}</div>
+          <div class="info">
+            <div class="details">Humidity {{ weather.main.humidity }} °F</div>
+            <div class="details">
+              Wind Speed {{ Math.round(weather.wind.speed) }} mph
+            </div>
+            <div class="details">
+              Sunset {{ getSunTime(weather.sys.sunset) }}
+            </div>
+            <div class="details">
+              Sunrise {{ getSunTime(weather.sys.sunrise) }}
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -31,17 +46,19 @@
     name: "App",
     data() {
       return {
-        api_key: "38198c6181c27beba9afdaf35119f73e",
+        condition: "",
+        api_key: process.env.VUE_APP_API_KEY,
         url_base: "https://api.openweathermap.org/data/2.5/",
         query: "",
         weather: {},
+        date: "",
       };
     },
     methods: {
       fetchWeather(e) {
         if (e.key == "Enter") {
           fetch(
-            `${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`
+            `${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`
           )
             .then((res) => {
               return res.json();
@@ -49,8 +66,36 @@
             .then(this.setResults);
         }
       },
+      getSunTime(unix) {
+        let newtime = new Date(unix * 1000);
+        let hours = newtime.getHours();
+        let mins = "0" + newtime.getMinutes();
+        let seconds = "0" + newtime.getSeconds();
+        return (this.date =
+          hours + ":" + mins.substr(-2) + ":" + seconds.substr(-2));
+      },
       setResults(results) {
         this.weather = results;
+        this.condition = this.weather.weather[0].main;
+      },
+      overcast() {
+        if (this.condition == "Clear") {
+          return "sunny";
+        } else if (this.condition == "Clouds") {
+          return "cloud";
+        } else if (this.condition == "Fog") {
+          return "fog";
+        } else if (this.condition == "Snow") {
+          return "snow";
+        } else if (this.condition == "Rain") {
+          return "rain";
+        } else if (this.condition == "Mist") {
+          return "mist";
+        } else if (this.condition == "Drizzle") {
+          return "drizzle";
+        } else {
+          return "";
+        }
       },
       dateBuilder() {
         let d = new Date();
@@ -98,10 +143,31 @@
     font-family: Avenir, Helvetica, Arial, sans-serif;
   }
   #app {
-    background-color: Blue;
+    background-image: url(./assets/images/suncloud.jpg);
     background-size: cover;
     background-position: bottom;
     transition: 0.4;
+  }
+  #app.cloud {
+    background-image: url(./assets/images/clouds.jpg);
+  }
+  #app.sunny {
+    background-image: url(./assets/images/sun.jpg);
+  }
+  #app.snow {
+    background-image: url(./assets/images/snow.jpg);
+  }
+  #app.rain {
+    background-image: url(./assets/images/rain.jpg);
+  }
+  #app.fog {
+    background-image: url(./assets/images/fog.jpg);
+  }
+  #app.mist {
+    background-image: url(./assets/images/mist.jpg);
+  }
+  #app.drizzle {
+    background-image: url(./assets/images/drizzle.jpg);
   }
   main {
     min-height: 100vh;
@@ -150,18 +216,45 @@
     font-style: italic;
     text-align: center;
   }
+
+  .weather-box {
+    justify-content: center;
+  }
   .weather-box .temp {
-    display: inline-block;
+    display: inline-flex;
     color: white;
     padding: 10px 25px;
+    width: 270px;
+    height: 160px;
     font-size: 100px;
     font-weight: 900;
     text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
-    background-color: rgba(225, 225, 255, 0.25);
+    background-color: rgba(225, 225, 255, 0.5);
     border-radius: 16px;
-    margin: 30px 0px;
+    margin: 20px 0px;
   }
 
+  .feels {
+    color: white;
+    padding: 10px 25px;
+    font-size: 50px;
+    font-weight: 400;
+    text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
+    margin: 10px 0px;
+  }
+  .weather-box .details {
+    color: white;
+    width: 350px;
+    height: 60px;
+    padding: 5px 5px;
+    font-size: 24px;
+    margin: 10px 10px;
+    background-color: rgba(225, 225, 255, 0.25);
+    border-radius: 16px;
+  }
+  .info {
+    display: inline-block;
+  }
   .weather-box .weather {
     color: white;
     font-size: 50px;
