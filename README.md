@@ -1,7 +1,7 @@
 # weather-app
 
-![Screenshot](sun-sc.jpg.png)
-![Screenshot](snow-sc.jpg.png)
+![Screenshot](https://github.com/anna-safavi/weather/blob/main/src/assets/images/sun-sc.png)
+![Screenshot](https://github.com/anna-safavi/weather/blob/main/src/assets/images/snow-sc.png)
 
 ## Project setup
 
