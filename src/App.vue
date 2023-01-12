@@ -29,10 +29,10 @@
               Wind Speed {{ Math.round(weather.wind.speed) }} mph
             </div>
             <div class="details">
-              Sunset {{ getSunTime(weather.sys.sunset) }}
+              Sunrise {{ getSunTime(weather.sys.sunrise) }}
             </div>
             <div class="details">
-              Sunrise {{ getSunTime(weather.sys.sunrise) }}
+              Sunset {{ getSunTime(weather.sys.sunset) }}
             </div>
           </div>
         </div>
@@ -249,7 +249,7 @@
     padding: 5px 5px;
     font-size: 24px;
     margin: 10px 10px;
-    background-color: rgba(225, 225, 255, 0.25);
+    background-color: rgba(83, 83, 94, 0.5);
     border-radius: 16px;
   }
   .info {
